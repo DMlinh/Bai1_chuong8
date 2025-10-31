@@ -1,0 +1,71 @@
+package com.example.bai1;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText editTextId, editTextTen, editTextSoDT;
+    Button btnThem, btnXoa, btnSua, btnLoad, btnDong;
+    ListView lvDanhBa;
+
+    ArrayList<DanhBa> dsDanhBa;
+    DanhBaAdapter adapter;
+    DanhBaDatabase danhBaDatabase;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        addControls();
+        addEvents();
+    }
+
+    void addControls() {
+        editTextId = findViewById(R.id.editTextId);
+        editTextTen = findViewById(R.id.editTextTen);
+        editTextSoDT = findViewById(R.id.editTextSoDT);
+        btnThem = findViewById(R.id.btnThem);
+        btnXoa = findViewById(R.id.btnXoa);
+        btnSua = findViewById(R.id.btnSua);
+        btnLoad = findViewById(R.id.btnLoad);
+        btnDong = findViewById(R.id.btnDong);
+        lvDanhBa = findViewById(R.id.lvDanhBa);
+
+        dsDanhBa = new ArrayList<>();
+        adapter = new DanhBaAdapter(this, R.layout.list_item_layout, dsDanhBa);
+        lvDanhBa.setAdapter(adapter);
+
+        danhBaDatabase = new DanhBaDatabase(this);
+    }
+
+    void addEvents() {
+        btnThem.setOnClickListener(v -> {
+            String ten = editTextTen.getText().toString();
+            String soDT = editTextSoDT.getText().toString();
+            danhBaDatabase.QueryData("INSERT INTO DanhBa VALUES(null,'" + ten + "','" + soDT + "')");
+            LoadDataDanhBa();
+        });
+
+        btnLoad.setOnClickListener(v -> LoadDataDanhBa());
+
+        btnDong.setOnClickListener(v -> finish());
+    }
+
+    void LoadDataDanhBa() {
+        Cursor dataDanhBa = danhBaDatabase.GetData("SELECT * FROM DanhBa");
+        dsDanhBa.clear();
+        while (dataDanhBa.moveToNext()) {
+            int id = dataDanhBa.getInt(0);
+            String ten = dataDanhBa.getString(1);
+            String soDT = dataDanhBa.getString(2);
+            dsDanhBa.add(new DanhBa(id, ten, soDT));
+        }
+        adapter.notifyDataSetChanged();
+    }
+}
