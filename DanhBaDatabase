@@ -1,0 +1,36 @@
+package com.example.bai1;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DanhBaDatabase extends SQLiteOpenHelper {
+
+    public DanhBaDatabase(Context context) {
+        super(context, "QLDanhBa.sqlite", null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String sql = "CREATE TABLE IF NOT EXISTS DanhBa(" +
+                "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "Ten NVARCHAR(80)," +
+                "SoDienThoai NVARCHAR(15))";
+        db.execSQL(sql);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+
+    public void QueryData(String sql) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(sql);
+    }
+
+    public Cursor GetData(String sql) {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery(sql, null);
+    }
+}
+
