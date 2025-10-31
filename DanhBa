@@ -1,0 +1,26 @@
+package com.example.bai1;
+
+public class DanhBa {
+    int id;
+    String ten;
+    String soDT;
+
+    public DanhBa(int id, String ten, String soDT) {
+        this.id = id;
+        this.ten = ten;
+        this.soDT = soDT;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getTen() {
+        return ten;
+    }
+
+    public String getSoDT() {
+        return soDT;
+    }
+}
+
