@@ -1,0 +1,39 @@
+package com.example.bai1;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import java.util.List;
+
+public class DanhBaAdapter extends ArrayAdapter<DanhBa> {
+
+    private Context context;
+    private int resource;
+    private List<DanhBa> danhBaList;
+
+    public DanhBaAdapter(Context context, int resource, List<DanhBa> danhBaList) {
+        super(context, resource, danhBaList);
+        this.context = context;
+        this.resource = resource;
+        this.danhBaList = danhBaList;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(resource, null);
+
+        TextView tvTen = view.findViewById(R.id.tvTen);
+        TextView tvSoDT = view.findViewById(R.id.tvSoDT);
+
+        DanhBa db = danhBaList.get(position);
+        tvTen.setText(db.getTen());
+        tvSoDT.setText(db.getSoDT());
+
+        return view;
+    }
+}
+
