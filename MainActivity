@@ -1,5 +1,6 @@
 package com.example.bai1;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -27,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void addControls() {
-        editTextId = findViewById(R.id.editTextId);
+        // Khởi tạo các EditText và Button
+        editTextId = findViewById(R.id.editTextId);  // Sử dụng EditText để hiển thị ID
         editTextTen = findViewById(R.id.editTextTen);
         editTextSoDT = findViewById(R.id.editTextSoDT);
         btnThem = findViewById(R.id.btnThem);
@@ -45,23 +47,67 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void addEvents() {
+        // Thêm mới danh bạ
         btnThem.setOnClickListener(v -> {
             String ten = editTextTen.getText().toString();
             String soDT = editTextSoDT.getText().toString();
-            danhBaDatabase.QueryData("INSERT INTO DanhBa VALUES(null,'" + ten + "','" + soDT + "')");
+
+            if (ten.isEmpty() || soDT.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Tên và số điện thoại không được để trống!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Insert vào database
+            danhBaDatabase.QueryData("INSERT INTO DanhBa (Ten, SoDienThoai) VALUES('" + ten + "','" + soDT + "')");
+
+            // Load lại danh bạ
             LoadDataDanhBa();
         });
 
+        // Load lại danh bạ
         btnLoad.setOnClickListener(v -> LoadDataDanhBa());
 
+        // Đóng ứng dụng
         btnDong.setOnClickListener(v -> finish());
+
+        // Xử lý sự kiện click vào một item trong ListView
+        lvDanhBa.setOnItemClickListener((parent, view, position, id) -> {
+            // Lấy DanhBa từ vị trí đã chọn
+            DanhBa danhBa = dsDanhBa.get(position);
+
+            // Hiển thị thông tin của danh bạ vào các EditText
+            editTextId.setText(String.valueOf(danhBa.getId()));  // Hiển thị ID
+            editTextTen.setText(danhBa.getTen());  // Hiển thị tên
+            editTextSoDT.setText(danhBa.getSoDT());  // Hiển thị số điện thoại
+        });
+
+        // Xử lý sự kiện Xóa
+        btnXoa.setOnClickListener(v -> {
+            // Lấy ID từ EditText
+            String idStr = editTextId.getText().toString();
+            if (!idStr.isEmpty()) {
+                int id = Integer.parseInt(idStr);
+
+                // Xóa danh bạ khỏi cơ sở dữ liệu
+                danhBaDatabase.QueryData("DELETE FROM DanhBa WHERE Id = " + id);
+
+                // Cập nhật lại danh bạ trong ListView
+                LoadDataDanhBa();
+
+                // Thông báo xóa thành công
+                Toast.makeText(MainActivity.this, "Đã xóa danh bạ", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Vui lòng chọn một danh bạ để xóa", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
+    // Hàm để load dữ liệu vào ListView
     void LoadDataDanhBa() {
         Cursor dataDanhBa = danhBaDatabase.GetData("SELECT * FROM DanhBa");
         dsDanhBa.clear();
         while (dataDanhBa.moveToNext()) {
-            int id = dataDanhBa.getInt(0);
+            int id = dataDanhBa.getInt(0); // ID tự động tăng
             String ten = dataDanhBa.getString(1);
             String soDT = dataDanhBa.getString(2);
             dsDanhBa.add(new DanhBa(id, ten, soDT));
